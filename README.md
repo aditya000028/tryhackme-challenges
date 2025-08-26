@@ -11,6 +11,7 @@ This project serves as both a personal learning journal and a showcase of practi
 | Room | Description | Folder |
 |------|-------------|--------|
 | [**Snort Challenge - Live Attacks**](https://tryhackme.com/room/snortchallenges2) | Use Snort to detect and stop real-time threats, analyse recorded logs and PCAP files, and identify anomalies | [snort-challenge-live-attacks](./snort-challenge-live-attacks) |
+| [**Retracted**](https://tryhackme.com/room/retracted) | Used Windows Powershell, Sysmon logs, and Windows Event Viewer to investigate a ransomware case | [endpoint-security-monitoring/retracted](./endpoint-security-monitoring/retracted) |
 
 > More rooms coming soon...
 
