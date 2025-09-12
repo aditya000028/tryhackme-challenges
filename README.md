@@ -12,8 +12,8 @@ This project serves as both a personal learning journal and a showcase of practi
 |------|-------------|--------|
 | [**Snort Challenge - Live Attacks**](https://tryhackme.com/room/snortchallenges2) | Use Snort to detect and stop real-time threats, analyse recorded logs and PCAP files, and identify anomalies | [snort-challenge-live-attacks](./snort-challenge-live-attacks) |
 | [**Retracted**](https://tryhackme.com/room/retracted) | Used Windows Powershell, Sysmon logs, and Windows Event Viewer to investigate a ransomware case | [endpoint-security-monitoring/retracted](./endpoint-security-monitoring/retracted) |
-| [**TShark Challenge I: Teamwork**](https://tryhackme.com/room/tsharkchallengesone), [**TShark Challenge II: Directory**](https://tryhackme.com/room/tsharkchallengestwo) | Put TShark skills into practice and analysed network traffic. | [tshark-challenge](./tshark-challenge)
-| [**ItsyBitsy**](https://tryhackme.com/room/itsybitsy) | Demonstrated ELK knowledge to investigate an incident | [security-information-and-event-management/itsybitsy](./security-information-and-event-management/itsy-bitsy)
+| [**TShark Challenge I: Teamwork**](https://tryhackme.com/room/tsharkchallengesone), [**TShark Challenge II: Directory**](https://tryhackme.com/room/tsharkchallengestwo) | Put TShark skills into practice and analysed network traffic. | [tshark-challenge](./tshark-challenge) |
+| [**ItsyBitsy**](https://tryhackme.com/room/itsybitsy) | Demonstrated ELK knowledge to investigate an incident | [security-information-and-event-management/itsybitsy](./security-information-and-event-management/itsy-bitsy) |
 
 > More rooms coming soon...
 
@@ -34,6 +34,7 @@ This project serves as both a personal learning journal and a showcase of practi
 ## 📚 About TryHackMe
 
 [TryHackMe](https://tryhackme.com) provides an interactive environment to grow as a cybersecurity professional. It offers guided, hands-on labs that cover:
+
 - Blue Team & Red Team methodologies
 - Incident detection and response
 - Threat hunting & malware analysis
@@ -44,4 +45,3 @@ This project serves as both a personal learning journal and a showcase of practi
 ## 📬 Contact
 
 I'm actively building my skills and looking to connect with others in cybersecurity. Please reach out to me on [LinkedIn](https://www.linkedin.com/in/aditya-gupta-security/)
-
