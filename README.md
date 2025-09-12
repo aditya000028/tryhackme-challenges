@@ -14,6 +14,7 @@ This project serves as both a personal learning journal and a showcase of practi
 | [**Retracted**](https://tryhackme.com/room/retracted) | Used Windows Powershell, Sysmon logs, and Windows Event Viewer to investigate a ransomware case | [endpoint-security-monitoring/retracted](./endpoint-security-monitoring/retracted) |
 | [**TShark Challenge I: Teamwork**](https://tryhackme.com/room/tsharkchallengesone), [**TShark Challenge II: Directory**](https://tryhackme.com/room/tsharkchallengestwo) | Put TShark skills into practice and analysed network traffic. | [tshark-challenge](./tshark-challenge) |
 | [**ItsyBitsy**](https://tryhackme.com/room/itsybitsy) | Demonstrated ELK knowledge to investigate an incident | [security-information-and-event-management/itsybitsy](./security-information-and-event-management/itsy-bitsy) |
+| [**Benign**](https://tryhackme.com/room/benign) | Investigate a compromised host using Splunk | [security-information-and-event-management/benign](./security-information-and-event-management/benign) |
 
 > More rooms coming soon...
 
