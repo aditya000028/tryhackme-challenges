@@ -44,6 +44,8 @@ Using the above screenshot, we know that the filesharing site is `pastebin[.]com
 
 ### A file was accessed on the filesharing site. What is the name of the file accessed?
 
+<img width="737" height="342" alt="image" src="https://github.com/user-attachments/assets/a7aece75-8856-4abf-a9e4-944b02abf2a8" />
+
 Upon going to the URL, we can see that the file `secret.txt` was accessed with the secret code being `THM{SECRET_CODE}`. Note that since we know simply accessing the `pastebin` URL will not cause any malicious actions, we were able to access the URL without taking any extra precautions such as using VM.
 
 ---
