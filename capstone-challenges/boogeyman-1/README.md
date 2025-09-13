@@ -139,4 +139,50 @@ Additionally, we can also view the requests and responses to the C2 server with 
 
 [screenshot]
 
-Decoding the encoded data in the body of the `POST` request using [Cyberchef](hxxps[://]gchq[.]github[.]io/CyberChef/), we can see the the attacker is sending the output of the commands being run on the victim machine back to the malicious server. 
+Decoding the encoded data in the body of the `POST` request using [Cyberchef](hxxps[://]gchq[.]github[.]io/CyberChef/), we can see the the attacker is sending the output of the commands being run on the victim machine back to the malicious server.
+
+Now lets look at the `protected_data.kdbx` exfiltrated file. We know that the attacker used `nslookup`, a tool used for making DNS requests, to exfiltrate the file to the `bpakcaging[.]xyz` domain, and the attacker has explicitly set the DNS server to server these requests with an IP of `167[.]71[.]211[.]113`. Therefore, we can set the Wireshark filter appropriately and we get the following results:
+
+[screenshot]
+
+Recall that the subdomain contained hex encoded data of the exfiltrated file. If we want to reconstruct the data, using Wireshark will not be too helpful for us since we would need to decode the all the subdomains back to its original form. Lets switch over to TShark for the added CLI ability to extract and format the relevant data. 
+
+We can then run the following command using TShark:
+
+```bash
+ubuntu@tryhackme:~/Desktop/artefacts$ tshark -r capture.pcapng -Y 'ip.dst == 167.71.211.113 and dns and dns.qry.name contains "bpakcaging.xyz"'                          
+47772 1797.245223 10.10.182.255 ? 167.71.211.113 DNS 163 Standard query 0x0002 A 03D9A29A67FB4BB50100030002100031C1F2E6BF714350BE58.bpakcaging.xyz.eu-west-1.ec2-utilities.amazonaws.com
+47774 1797.431661 10.10.182.255 ? 167.71.211.113 DNS 152 Standard query 0x0003 A 03D9A29A67FB4BB50100030002100031C1F2E6BF714350BE58.bpakcaging.xyz.eu-west-1.compute.internal
+47776 1797.609447 10.10.182.255 ? 167.71.211.113 DNS 125 Standard query 0x0004 A 03D9A29A67FB4BB50100030002100031C1F2E6BF714350BE58.bpakcaging.xyz
+47782 1798.471118 10.10.182.255 ? 167.71.211.113 DNS 163 Standard query 0x0002 A 05216AFC5AFF03040001000000042000AF4DE7A467FADFBFEB.bpakcaging.xyz.eu-west-1.ec2-utilities.amazonaws.com
+47784 1798.656750 10.10.182.255 ? 167.71.211.113 DNS 152 Standard query 0x0003 A 05216AFC5AFF03040001000000042000AF4DE7A467FADFBFEB.bpakcaging.xyz.eu-west-1.compute.internal
+47786 1798.825166 10.10.182.255 ? 167.71.211.113 DNS 125 Standard query 0x0004 A 05216AFC5AFF03040001000000042000AF4DE7A467FADFBFEB.bpakcaging.xyz
+47792 1799.752241 10.10.182.255 ? 167.71.211.113 DNS 163 Standard query 0x0002 A EB78AE194B03926333E0CC968727A1FF8CC4CD5151FAAC0520.bpakcaging.xyz.eu-west-1.ec2-utilities.amazonaws.com
+47794 1799.935720 10.10.182.255 ? 167.71.211.113 DNS 152 Standard query 0x0003 A EB78AE194B03926333E0CC968727A1FF8CC4CD5151FAAC0520.bpakcaging.xyz.eu-west-1.compute.internal
+...
+```
+
+With the above command, we get the data we want but we also get a lot of clutter with it. So lets create a command to clean everything up to get our data ready to re-create the exfiltrated file:
+
+```bash
+tshark -r capture.pcapng -Y 'ip.dst == 167.71.211.113 and dns and dns.qry.name contains "bpakcaging.xyz"' -T fields -e dns.qry.name | cut -d '.' -f1 | uniq | tr -d '\n' > protected_data_hex
+```
+
+What we did with this command is apply the same filter as we did in Wireshark, display just the query names, clean the output up so that we have just the hex encoded data on a single line, and save it to a file. We can now finally convert this file back to its original form like so:
+
+```bash
+cat protected_data_hex | xxd -r -p > protected_data.kdbx
+```
+
+Where `xxd` is a tool used to convert hexadecimal representation to ASCII. 
+
+When we now try to open our reconstructed `protected_data.kdbx` file, we are asked for a password - but where do we find that? Perhaps it could be stored in the database file (`plum.sqlite`) that the attacker accessed using `sq3.exe`? Looking at the timestamp of `2023-01-13 17:25:38.759011Z` of when the file was accessed, lets check for Wireshark logs during the C2 connection around the same time to see if we can spot the password.
+
+[screenshot]
+
+Looking at the log immediately after the above timestamp, we were able to decode the data sent in the the log to spot a password! Once we entered the password to unlock the file, we are able to see sensitive information:
+
+[screenshot]
+
+---
+
