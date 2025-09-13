@@ -4,7 +4,7 @@
 
 Julianne, a finance employee working for Quick Logistics LLC, received a follow-up email regarding an unpaid invoice from their business partner, B Packaging Inc. Unbeknownst to her, the attached document was malicious and compromised her workstation.
 
-[screenshot]
+<img width="763" height="303" alt="28bbc4ff07b8ad16da155894ca3d2d73" src="https://github.com/user-attachments/assets/6cb64e30-4eec-407b-8f94-96b932999d35" />
 
 The security team was able to flag the suspicious execution of the attachment, in addition to the phishing reports received from the other finance department employees, making it seem to be a targeted attack on the finance team. Upon checking the latest trends, the initial TTP used for the malicious attachment is attributed to the new threat group named Boogeyman, known for targeting the logistics sector. Our job is to analyse and assess the impact of the compromise.
 
@@ -131,19 +131,19 @@ Now that we know the attacker was able to exfiltrate two files to `bpakcaging[.]
 
 Since we were able to see the IP and host name of the file hosting server (`167[.]71[.]211[.]113`, `files[.]bpakcaging[.]xyz`) that the attacker used, we can prepare a filter in Wireshark to see the server's `http` responses:
 
-[screenshot]
+<img width="1917" height="630" alt="Screenshot 2025-09-12 220533" src="https://github.com/user-attachments/assets/525e80a9-a08f-4eac-84b5-f60bf0263577" />
 
 We can see that the attacker is using Python's SimpleHTTP server.
 
 Additionally, we can also view the requests and responses to the C2 server with the host name `cdn[.]bpakcaging[.]xyz:8080`. The `GET` requests did not show anything of high interest, but looking at the `POST` requests, we see the following:
 
-[screenshot]
+<img width="1908" height="906" alt="Screenshot 2025-09-12 222346" src="https://github.com/user-attachments/assets/f25c8de7-c0b4-42b3-9a2b-9c04b1547b1e" />
 
 Decoding the encoded data in the body of the `POST` request using [Cyberchef](hxxps[://]gchq[.]github[.]io/CyberChef/), we can see the the attacker is sending the output of the commands being run on the victim machine back to the malicious server.
 
 Now lets look at the `protected_data.kdbx` exfiltrated file. We know that the attacker used `nslookup`, a tool used for making DNS requests, to exfiltrate the file to the `bpakcaging[.]xyz` domain, and the attacker has explicitly set the DNS server to server these requests with an IP of `167[.]71[.]211[.]113`. Therefore, we can set the Wireshark filter appropriately and we get the following results:
 
-[screenshot]
+<img width="1917" height="858" alt="Screenshot 2025-09-13 132405" src="https://github.com/user-attachments/assets/db00df84-d590-4188-a797-4cdf79a35dea" />
 
 Recall that the subdomain contained hex encoded data of the exfiltrated file. If we want to reconstruct the data, using Wireshark will not be too helpful for us since we would need to decode the all the subdomains back to its original form. Lets switch over to TShark for the added CLI ability to extract and format the relevant data. 
 
@@ -178,11 +178,12 @@ Where `xxd` is a tool used to convert hexadecimal representation to ASCII.
 
 When we now try to open our reconstructed `protected_data.kdbx` file, we are asked for a password - but where do we find that? Perhaps it could be stored in the database file (`plum.sqlite`) that the attacker accessed using `sq3.exe`? Looking at the timestamp of `2023-01-13 17:25:38.759011Z` of when the file was accessed, lets check for Wireshark logs during the C2 connection around the same time to see if we can spot the password.
 
-[screenshot]
+<img width="1913" height="907" alt="Screenshot 2025-09-13 140122" src="https://github.com/user-attachments/assets/b43e4e64-7371-43f6-94b5-45dafe072d21" />
 
 Looking at the log immediately after the above timestamp, we were able to decode the data sent in the the log to spot a password! Once we entered the password to unlock the file, we are able to see sensitive information:
 
-[screenshot]
+<img width="981" height="617" alt="Screenshot 2025-09-13 141435" src="https://github.com/user-attachments/assets/fe8f2c16-bacd-437d-8b13-f8c8cfa6275f" />
 
+---
 ---
 
