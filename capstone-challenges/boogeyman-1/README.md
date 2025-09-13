@@ -123,4 +123,20 @@ We get some interesting output. It seems like the intruder has exfiltrated the `
 $hex = ($bytes|ForEach-Object ToString X2) -join '';;pwd
 ```
 
-The intruder then used `nslookup`, which performs DNS queries, to exfiltrate the hex encoded data as a subdomain of the `bpakcaging[.]xyz` domain.
+The intruder then used `nslookup`, which performs DNS queries, to exfiltrate the hex encoded data as a subdomain of the `bpakcaging[.]xyz` domain. 
+
+### Network Analysis
+
+Now that we know the attacker was able to exfiltrate two files to `bpakcaging[.]xyz`, we can look at the packet capture using Wireshark.
+
+Since we were able to see the IP and host name of the file hosting server (`167[.]71[.]211[.]113`, `files[.]bpakcaging[.]xyz`) that the attacker used, we can prepare a filter in Wireshark to see the server's `http` responses:
+
+[screenshot]
+
+We can see that the attacker is using Python's SimpleHTTP server.
+
+Additionally, we can also view the requests and responses to the C2 server with the host name `cdn[.]bpakcaging[.]xyz:8080`. The `GET` requests did not show anything of high interest, but looking at the `POST` requests, we see the following:
+
+[screenshot]
+
+Decoding the encoded data in the body of the `POST` request using [Cyberchef](hxxps[://]gchq[.]github[.]io/CyberChef/), we can see the the attacker is sending the output of the commands being run on the victim machine back to the malicious server. 
