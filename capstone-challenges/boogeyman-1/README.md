@@ -71,7 +71,7 @@ ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockTex
 
 The attacker sends an initial beacon to `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/8cce49b0` for C2, and then continously checks in with `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/b86459bb` to retrieve attacker commands. It then executes the retrieved commands, and send the results back to `hxxp[://]cdn[.]bpakcaging[.]xyz:8080/27fe2489`.
 
-The attacker downloaded a `seatbelt.exe` file, `sb.exe` and `sq3.exe`. Although the domain `files[.]bpakcaging[.]xyz` does not exist, I researched that `seatbelt.exe` is a C# tool used for enumeration and information gathering. We can confirm the execution of `seatbelt.exe`:
+The attacker also downloaded a `seatbelt.exe` file, `sb.exe` and `sq3.exe`. Although the domain `files[.]bpakcaging[.]xyz` does not exist, I researched that `seatbelt.exe` is a C# tool used for enumeration and information gathering. We can confirm the execution of `seatbelt.exe`:
 
 ```bash
 ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockText} | grep seatbelt[.]exe -i
@@ -90,7 +90,7 @@ ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockTex
   "ScriptBlockText": ".\\sb[.]exe -group=user;pwd"
 ```
 
-Now lets see if a file was accessed by the `sq3.exe` binary:
+Now lets see if a file was accessed by the `sq3.exe` binary, which seems to be a tool to interact with database files:
 
 ```bash
 ubuntu@tryhackme:~/Desktop/artefacts$ cat powershell[.]json | jq {ScriptBlockText} | grep sq3[.]exe -i     
@@ -139,7 +139,7 @@ Additionally, we can also view the requests and responses to the C2 server with 
 
 Decoding the encoded data in the body of the `POST` request using [Cyberchef](https://gchq.github.io/CyberChef/), we can see the the attacker is sending the output of the commands being run on the victim machine back to the malicious server.
 
-Now lets look at the `protected_data.kdbx` exfiltrated file. We know that the attacker used `nslookup`, a tool used for making DNS requests, to exfiltrate the file to the `bpakcaging[.]xyz` domain, and the attacker has explicitly set the DNS server to server these requests with an IP of `167[.]71[.]211[.]113`. Therefore, we can set the Wireshark filter appropriately and we get the following results:
+Now lets look at the `protected_data.kdbx` exfiltrated file. We know that the attacker used `nslookup`, a tool used for making DNS requests, to exfiltrate the file to the `bpakcaging[.]xyz` domain. The attacker has explicitly set the DNS server to serve these requests with an IP of `167[.]71[.]211[.]113`. Therefore, we can set the Wireshark filter appropriately and we get the following results:
 
 <img width="1917" height="858" alt="Screenshot 2025-09-13 132405" src="https://github.com/user-attachments/assets/db00df84-d590-4188-a797-4cdf79a35dea" />
 
@@ -188,4 +188,8 @@ Looking at the log immediately after the above timestamp, we were able to decode
 
 ## Lessons Learned
 
-- 
+- Phishing remains a major entry point — even a simple email can lead to severe compromise if users are not cautious.
+- Defense in depth is key — email filters, endpoint protection, and network monitoring should work together to catch what slips past.
+- Logs are invaluable — PowerShell logs and packet captures were essential in reconstructing attacker activity and exfiltration.
+- DNS can be abused for exfiltration — monitoring long/random DNS queries should be part of security baselines.
+- Correlation strengthens analysis — matching PowerShell events, file system access, and PCAP traffic helped piece together the full attack chain.
