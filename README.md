@@ -1,8 +1,13 @@
 # 🔐 TryHackMe Challenges
 
-Welcome to my **TryHackMe Challenges** repository — a collection of hands-on cybersecurity labs I've completed on [TryHackMe](https://tryhackme.com). Each folder contains detailed walkthroughs, detection logic, tools used, and key takeaways from different challenges and rooms.
+Welcome to my **TryHackMe Challenges** repository — a collection of hands-on cybersecurity labs I've completed on [TryHackMe](https://tryhackme.com). Each folder contains detailed walkthroughs, detection logic, tools used, and key takeaways from different challenges and rooms. This project serves as both a personal learning journal and a showcase of practical cybersecurity skills for Blue Team, SOC Analyst, and detection engineering roles.
 
-This project serves as both a personal learning journal and a showcase of practical cybersecurity skills for Blue Team, SOC Analyst, and detection engineering roles. At the end of this journey, I will have obtained the [Security Analyst Level 1 certification from TryHackMe](https://tryhackme.com/certification/security-analyst-level-1)
+---
+
+## 🏅 Certificate of Completion
+
+I have successfully completed all the rooms and earned the official **TryHackMe Certificate of Completion**.  
+![TryHackMe Certificate](./TryHackMe-SOC-Level-1-Certificate-1.png)
 
 ---
 
@@ -11,24 +16,27 @@ This project serves as both a personal learning journal and a showcase of practi
 | TryHackMe Room | Description | Folder |
 |------|-------------|--------|
 | [**Snort Challenge - Live Attacks**](https://tryhackme.com/room/snortchallenges2) | Use Snort to detect and stop real-time threats, analyse recorded logs and PCAP files, and identify anomalies | [snort-challenge-live-attacks](./snort-challenge-live-attacks) |
-| [**Retracted**](https://tryhackme.com/room/retracted) | Used Windows Powershell, Sysmon logs, and Windows Event Viewer to investigate a ransomware case | [endpoint-security-monitoring/retracted](./endpoint-security-monitoring/retracted) |
+| [**Retracted**](https://tryhackme.com/room/retracted) | Used Windows Powershell, Sysmon logs, and Windows Event Viewer to investigate a ransomware case | [endpoint-security-monitoring/retracted](./endpoint-security-monitoring/retracted/README.md) |
 | [**TShark Challenge I: Teamwork**](https://tryhackme.com/room/tsharkchallengesone), [**TShark Challenge II: Directory**](https://tryhackme.com/room/tsharkchallengestwo) | Put TShark skills into practice and analysed network traffic. | [tshark-challenge](./tshark-challenge) |
-| [**ItsyBitsy**](https://tryhackme.com/room/itsybitsy) | Demonstrated ELK knowledge to investigate an incident | [security-information-and-event-management/itsybitsy](./security-information-and-event-management/itsy-bitsy) |
-| [**Benign**](https://tryhackme.com/room/benign) | Investigate a compromised host using Splunk | [security-information-and-event-management/benign](./security-information-and-event-management/benign) |
+| [**ItsyBitsy**](https://tryhackme.com/room/itsybitsy) | Demonstrated ELK knowledge to investigate an incident | [security-information-and-event-management/itsybitsy](./security-information-and-event-management/itsy-bitsy/README.md) |
+| [**Benign**](https://tryhackme.com/room/benign) | Investigate a compromised host using Splunk | [security-information-and-event-management/benign](./security-information-and-event-management/benign/README.md) |
+| [**Boogeyman 1**](https://tryhackme.com/room/boogeyman1) | Use Windows Event logs, Wireshark and TShark to investigate an infiltration/exfiltration case | [boogeyman-1](./capstone-challenges/boogeyman-1/README.md) |
+| [**Boogeyman 3**](https://tryhackme.com/room/boogeyman3) | Use ELK with Sysmon and Windows logs to investitgate the TTPs of the Boogeyman adversary | [boogeyman-3](./capstone-challenges/boogeyman-3/README.md) |
 
-> More rooms coming soon...
+*Note: Although I have completed all the rooms, I have only posted about the ones which I found to be the most interesting*
 
 ---
 
 ## 🧰 Skills & Tools Practiced
 
-- 🛡️ Snort (Intrusion Detection System)
-- 🧠 Cyber Defence Frameworks (MITRE ATT&CK/D3FEND, Cyber Kill Chain, Diamond Model)
-- 📁 PCAP Analysis (Wireshark, TShark, tcpdump)
-- 🔍 Threat Detection & Rule Writing
-- 🐧 Linux & Windows CLI
-- 🔥 Network Security Monitoring
-- 📜 Splunk & ELK
+- 🛡️ **Intrusion Detection & Prevention**: Snort, Suricata
+- 📁 **PCAP Analysis & Network Forensics**: Wireshark, TShark, tcpdump
+- 🔍 **Threat Detection & Hunting**: Writing detection rules, IOC extraction, anomaly detection
+- 📜 **Log Analysis & SIEM**: Splunk, ELK (Elasticsearch, Logstash, Kibana)
+- 🧠 **Cybersecurity Frameworks**: MITRE ATT&CK & D3FEND, Cyber Kill Chain, Diamond Model
+- 🐧 **Operating Systems**: Linux (bash, sysinternals), Windows (Event Viewer, Sysmon)
+- 🔥 **Incident Response & Malware Triage**: Registry, PowerShell, process analysis
+- 🛠 **Security Operations (SOC) Practices**: Alert triage, threat intel mapping
 
 ---
 
