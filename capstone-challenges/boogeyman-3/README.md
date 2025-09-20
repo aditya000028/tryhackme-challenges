@@ -132,8 +132,6 @@ A phishing email sent by a compromised account of Allie Sierra (`allie.sierra@qu
   | [`T1548.002`](https://attack.mitre.org/techniques/T1548/002/) | Abuse Elevation Control Mechanism: Bypass User Account Control | Adversary used `fodhelper.exe` |
   | [`T1486`](https://attack.mitre.org/techniques/T1486/) | Data Encrypted for Impact | Adversary used `ransomboogey.exe` to encrypt data |
 
-- **Summary conclusion:** Attacker gained access to `WKSTN-0051.quicklogistics.org` by spearphishing email to Evan Hutchinson. Attacker was able to set up a C2 connection, download malware, dump credentials, and move laterally. Attacker finally downloaded and executed a ransomware file. The extent of the ransomware is currently unknown.
-
 ---
 
 ## Remediation & Mitigation
