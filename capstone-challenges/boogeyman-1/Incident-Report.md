@@ -84,15 +84,11 @@ A phishing email was recieved by Julianne on **2023-01-13 17:09:04**, resulting 
 
 - **User accounts / services:** `QUICKLOGISTICS\julianne.westcott`
 
----
-
 ## Evidence & Artifacts
 
 - `artefacts/powershell.json`
 - `artefacts/dump.eml`
 - `artefacts/capture.pcapng`
-
----
 
 ## Analysis & Findings
 
