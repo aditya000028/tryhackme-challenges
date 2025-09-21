@@ -78,10 +78,10 @@ A phishing email sent by a compromised account of Allie Sierra (`allie.sierra@qu
 - **IPs:**
   - `Host/Source IP: 10.10.155.159`
   - `C2: 165.232.170.151:80`
-- **File hashes:**
-  - `mimikatz SHA256:908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53`
-  - `ransomboogey.exe SHA256:18158ede3f2892862cf2895e20b1495f7034f04fd63a36abfe8c944063617ab3`
-  - `PowerView.ps1 SHA256:908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53`
+- **File hashes (SHA256):**
+  - `mimikatz - 908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53`
+  - `ransomboogey.exe - 18158ede3f2892862cf2895e20b1495f7034f04fd63a36abfe8c944063617ab3`
+  - `PowerView.ps1 - 908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53`
 - **Commands / processes:**
   - `xcopy.exe`
   - `Register-ScheduledTask Review -InputObject $D -Force`
