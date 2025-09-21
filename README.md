@@ -20,7 +20,7 @@ I have successfully completed all the rooms and earned the official **TryHackMe 
 | [**TShark Challenge I: Teamwork**](https://tryhackme.com/room/tsharkchallengesone), [**TShark Challenge II: Directory**](https://tryhackme.com/room/tsharkchallengestwo) | Put TShark skills into practice and analysed network traffic. | [tshark-challenge](./tshark-challenge) |
 | [**ItsyBitsy**](https://tryhackme.com/room/itsybitsy) | Demonstrated ELK knowledge to investigate an incident | [security-information-and-event-management/itsybitsy](./security-information-and-event-management/itsy-bitsy/README.md) |
 | [**Benign**](https://tryhackme.com/room/benign) | Investigate a compromised host using Splunk | [security-information-and-event-management/benign](./security-information-and-event-management/benign/README.md) |
-| [**Boogeyman 1**](https://tryhackme.com/room/boogeyman1) | Use Windows Event logs, Wireshark and TShark to investigate an infiltration/exfiltration case | [boogeyman-1](./capstone-challenges/boogeyman-1/README.md) |
+| [**Boogeyman 1**](https://tryhackme.com/room/boogeyman1) | Use Windows Event logs, Wireshark and TShark to investigate an infiltration/exfiltration case | [boogeyman-1](./capstone-challenges/boogeyman-1/Incident-Report.md) |
 | [**Boogeyman 3**](https://tryhackme.com/room/boogeyman3) | Use ELK with Sysmon and Windows logs to investitgate the TTPs of the Boogeyman adversary | [boogeyman-3](./capstone-challenges/boogeyman-3/README.md) |
 
 *Note: Although I have completed all the rooms, I have only posted about the ones which I found to be the most interesting*
