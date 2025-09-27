@@ -11,7 +11,7 @@ My mission was to analyze the provided `directory-curiosity.pcap` using **TShark
 
 ### What is the name of the malicious/suspicious domain?
 
-We filter for DNS queries to see what domains the client tried to resolve. Since we only care about A records (type 1 = IPv4 address queries), we refine the filter:
+We filter for DNS queries to see what domains the client tried to resolve. Since we only care about A records (IPv4 address queries), we refine the filter:
 
 ```bash
 tshark -r directory-curiosity.pcap -T fields -e dns.qry.name -Y 'dns and dns.qry.type == 1' | sort | uniq
