@@ -15,7 +15,9 @@ Let’s dive in and stop this attack.
 We begin by using **Snort** to monitor and capture network traffic. Situated in our desktop folder, we run the command below
 
 ### Command:
-`sudo snort -n 100 -l .`
+```
+sudo snort -n 100 -l .
+```
 
 ### Explanation:
 - `sudo`: Snort needs superuser (root) rights to sniff the traffic, so we run with superuser privileges.
@@ -29,7 +31,9 @@ After running the command, we get the following output:
 This command has generated a log file for us. We can now use a snort command to read the log file.
 
 ### Command:
-`sudo snort -r snort.log.1754616620 -dv`
+```
+sudo snort -r snort.log.1754616620 -dv
+```
 
 ### Explanation:
 - `-r snort.log.1754616620`: Specifies the file to read
@@ -111,7 +115,9 @@ We notice that there are many more repeated attempts from the ip address of `10.
 Now that we've identified the attacker's IP, we can write a custom Snort rule to detect this malicious activity. We can create a file called `local.rules` and write the following line
 
 ### Rule: 
-`alert tcp 10.10.245.36 any <> 10.10.140.29 22 (msg: "Bad actor interaction on port 22!"; sid: 1000001; rev: 1;)`
+```
+alert tcp 10.10.245.36 any <> 10.10.140.29 22 (msg: "Bad actor interaction on port 22!"; sid: 1000001; rev: 1;)
+```
 
 Explanation:
 - `alert`: This action will generate an alert when the rule is triggered.
@@ -126,7 +132,9 @@ Explanation:
 We can then test this rule by using the following command:
 
 ### Command:
-`sudo snort -c local.rules -T`
+```
+sudo snort -c local.rules -T
+```
 
 ### Explanation:
 - `-c local.rules`: Use the config/rules file local.rules
@@ -138,12 +146,18 @@ At the end of the ouput, you should see a message saying Snort has successfully 
 
 Now let’s change our rule from `alert` to `drop` to actually block the traffic. Here is our updated rule:
 ### Rule
-`drop tcp 10.10.245.36 any <> 10.10.140.29 22 (msg: "Bad actor interaction on port 22!"; sid: 1000001; rev: 2;)`
+
+```
+drop tcp 10.10.245.36 any <> 10.10.140.29 22 (msg: "Bad actor interaction on port 22!"; sid: 1000001; rev: 2;)
+```
+
 (Note that we incremented the rev so that it helps analysts update their rule history)
 
 Finally, we can then run the following command to start snort in IPS mode:
 ### Command:
-`sudo snort -c local.rules -Q --daq afpacket -i eth0:eth1 -A full`
+```
+sudo snort -c local.rules -Q --daq afpacket -i eth0:eth1 -A full
+```
 
 ### Explanation:
 - `-c local.rules`: Use our custom rule file.
