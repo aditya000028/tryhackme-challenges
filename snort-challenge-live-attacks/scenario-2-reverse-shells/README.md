@@ -10,7 +10,9 @@ The story in this scenario continues from Scenario 1 — we've successfully bloc
 We begin again by using **Snort** to monitor and capture network traffic. In our desktop folder, we run the command below
 
 ### Command:
-`sudo snort -n 100 -l .`
+```
+sudo snort -n 100 -l .
+```
 
 ### Explanation:
 - `sudo`: Snort needs superuser (root) rights to sniff the traffic, so we run with superuser privileges.
@@ -21,7 +23,9 @@ We begin again by using **Snort** to monitor and capture network traffic. In our
 We can now use a snort command to read the newly generated log file.
 
 ### Command: 
-`sudo snort -r snort.log.1754627679 -dv`
+```
+sudo snort -r snort.log.1754627679 -dv
+```
 
 ### Explanation:
 - `-r snort.log.1754616620`: Specifies the file to read
@@ -68,7 +72,7 @@ TCP Options (3) => NOP NOP TS: 2358504330 1980672028
 
 From the first packet, it looks to be like a Linux command prompt in the data payload, indicating that the command prompt is being sent over the network to the attacker. The attacker has a reverse shell set up. 
 
-The second packet seems indicates the `ls` command being sent from the attacker's machine to the victim, to get a sense of the current files and folders in the victim machine. The attacker has remote command execution. 
+The second packet indicates the `ls` command being sent from the attacker's machine to the victim, to get a sense of the current files and folders in the victim machine. The attacker has remote command execution. 
 
 Finally, the third packet shows the response of the ls command issued by the attacker, travelling from the victim to the attackers machine. The attacker is able to perform post-exploitation activities such as data exfiltration. 
 
@@ -78,7 +82,9 @@ We now know the IP address of the attacker and the port being used, which is `10
 We can create a Snort rule to detect this malicious activity. After creating and naming a file `local.rules`, we can enter the following line:
 
 ### Rule:
-`alert tcp 10.10.144.156 4444 <> 10.10.196.55 any (msg: "Threat actor interaction detected!"; sid: 1000001; rev: 1;)`
+```
+alert tcp 10.10.144.156 4444 <> 10.10.196.55 any (msg: "Threat actor interaction detected!"; sid: 1000001; rev: 1;)
+```
 
 ### Explanation:
 - `alert`: This action will generate an alert when the rule is triggered.
@@ -93,7 +99,9 @@ We can create a Snort rule to detect this malicious activity. After creating and
 We can then test this rule by using the following command:
 
 ### Command:
-`sudo snort -c local.rules -T`
+```
+sudo snort -c local.rules -T
+```
 
 ### Explanation:
 - `-c local.rules`: Use the config/rules file local.rules
@@ -106,13 +114,17 @@ At the end of the output, you should see a message saying Snort has successfully
 Now let’s change our rule from `alert` to `drop` to actually block the traffic. Here is our updated rule:
 
 ### Rule
-`drop tcp 10.10.144.156 4444 <> 10.10.196.55 any (msg: "Threat actor reverse shell packets dropped"; sid: 1000001; rev: 2;)`
+```
+drop tcp 10.10.144.156 4444 <> 10.10.196.55 any (msg: "Threat actor reverse shell packets dropped"; sid: 1000001; rev: 2;)
+```
 
 (Note that we incremented the rev so that it helps analysts update their rule history)
 
 Finally, we can then run the following command to start snort in IPS mode:
 ### Command:
-`sudo snort -c local.rules -Q --daq afpacket -i eth0:eth1 -A full`
+```
+sudo snort -c local.rules -Q --daq afpacket -i eth0:eth1 -A full
+```
 
 ### Explanation:
 - `-c local.rules`: Use our custom rule file.
